@@ -1,50 +1,63 @@
+let pedido = [];
+
+class Producto {
+  constructor(id, nombre, precio, cantidad) {
+    this.id = id;
+    this.nombre = nombre;
+    this.precio = precio;
+    this.cantidad = cantidad;
+  }
+}
+
 // Cargar productos iniciales
 const productosIniciales = [
-  { id: 1, nombre: 'Desodorante', precio: 900, cantidad: 500 },
-  { id: 2, nombre: 'Crema Facial', precio: 450, cantidad: 100 },
-  { id: 3, nombre: 'Perfume', precio: 5000, cantidad: 80 },
-  { id: 4, nombre: 'Shampoo', precio: 400, cantidad: 38},
-  { id: 5, nombre: 'Acondicionador', precio: 350, cantidad: 48},
-  { id: 6, nombre: 'Crema de Peinar', precio: 450, cantidad: 24}
+  new Producto(1, 'Desodorante', 900, 500),
+  new Producto(2, 'Crema Facial', 450, 100),
+  new Producto(3, 'Perfume', 5000, 80),
+  new Producto(4, 'Shampoo', 400, 38),
+  new Producto(5, 'Acondicionador', 350, 48),
+  new Producto(6, 'Crema de Peinar', 450, 24)
 ];
 
 // Función para obtener los datos de productos desde el almacenamiento local
 function obtenerDatosProductos() {
-  let datosProductos = localStorage.getItem('productos');
+  let datosProductos = localStorage.getItem('productosIniciales',Producto);
   return datosProductos ? JSON.parse(datosProductos) : [];
 }
 
 // Función para guardar los datos de productos en el almacenamiento local
 function guardarDatosProductos(datos) {
-  localStorage.setItem('productos', JSON.stringify(datos));
+  localStorage.setItem('productosIniciales', JSON.stringify(datos));
 }
 
 // Función para mostrar los productos en el HTML
 function mostrarProductos() {
-  let productosContainer = document.getElementById('productosContainer');
+  let productosContainer = document.getElementById('product-container');
   productosContainer.innerHTML = '';
 
-  var productos = obtenerDatosProductos();
-
-  productos.forEach(function(producto) {
+  productosIniciales.forEach(producto => {
     let divProducto = document.createElement('div');
     divProducto.classList.add('producto');
+    // Inner HTML
     divProducto.innerHTML = `
-      <p>ID: ${producto.id}</p>
-      <p>Nombre: ${producto.nombre}</p>
-      <p>Precio: $${producto.precio}</p>
-      <p>Cantidad: ${producto.cantidad}</p>
-      <input type="number" id="cantidad-${producto.id}" placeholder="Cantidad">
-      <button onclick="realizarPedido(${producto.id})">Pedido</button>
-      <p id="resultado-${producto.id}"></p>
+      <div class='card'>  
+        <p>ID: ${producto.id}</p>
+        <p>Nombre: ${producto.nombre}</p>
+        <p>Precio: $${producto.precio}</p>
+        <p>Cantidad: <span id="cantidad-${producto.id}">${producto.cantidad}</span></p>
+        <input type="number" id="cantidad${producto.id}" placeholder="Cantidad">
+        <button class="pedido" onclick="realizarPedido(${producto.id})">Pedido</button>
+        <p id="resultado-${producto.id}"></p>
+      </div>
     `;
 
     productosContainer.appendChild(divProducto);
   });
 }
+
 // Función para realizar un pedido de un producto específico
 function realizarPedido(id) {
-  let cantidadInput = document.getElementById(`cantidad-${id}`);
+  let cantidadInput = document.getElementById(`cantidad${id}`);
   let cantidad = parseInt(cantidadInput.value);
 
   if (isNaN(cantidad) || cantidad <= 0) {
@@ -69,8 +82,22 @@ function realizarPedido(id) {
 
   producto.cantidad -= cantidad;
   guardarDatosProductos(productos);
-  mostrarProductos();
+  actualizarCantidadHTML(producto.id, producto.cantidad); // Actualizar la cantidad en el HTML
+  guardarPedido(producto, cantidad); // Guardar el pedido en localStorage
   mostrarMensaje(`Pedido realizado. Stock actual del producto ${id}: ${producto.cantidad}`);
+}
+
+// Función para guardar un pedido en el localStorage
+function guardarPedido(producto, cantidad) {
+  let pedidoActual = JSON.parse(localStorage.getItem('pedido')) || []; // Obtener el pedido existente o un arreglo vacío
+  pedidoActual.push({ producto, cantidad }); // Agregar el nuevo pedido al arreglo
+  localStorage.setItem('pedido', JSON.stringify(pedidoActual)); // Guardar el arreglo actualizado en localStorage
+}
+
+// Función para actualizar la cantidad en el HTML
+function actualizarCantidadHTML(id, cantidad) {
+  let cantidadElement = document.getElementById(`cantidad-${id}`);
+  cantidadElement.textContent = cantidad;
 }
 
 // Función para mostrar mensajes en el HTML
@@ -83,9 +110,7 @@ function mostrarMensaje(mensaje) {
   }, 2000);
 }
 
-
-
-guardarDatosProductos(productosIniciales);
+// Llamada inicial para cargar y mostrar los productos
 mostrarProductos();
   
     
