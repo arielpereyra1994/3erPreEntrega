@@ -16,12 +16,13 @@ const productosIniciales = [
   new Producto(3, 'Perfume', 5000, 80),
   new Producto(4, 'Shampoo', 400, 38),
   new Producto(5, 'Acondicionador', 350, 48),
-  new Producto(6, 'Crema de Peinar', 450, 24)
+  new Producto(6, 'Crema de Peinar', 450, 24),
+  new Producto(7, 'Jabon de Tocador', 420, 240)
 ];
 
 // Función para obtener los datos de productos desde el almacenamiento local
 function obtenerDatosProductos() {
-  let datosProductos = localStorage.getItem('productosIniciales',Producto);
+  let datosProductos = localStorage.getItem('productosIniciales');
   return datosProductos ? JSON.parse(datosProductos) : [];
 }
 
@@ -30,12 +31,13 @@ function guardarDatosProductos(datos) {
   localStorage.setItem('productosIniciales', JSON.stringify(datos));
 }
 
-// Función para mostrar los productos en el HTML
 function mostrarProductos() {
   let productosContainer = document.getElementById('product-container');
   productosContainer.innerHTML = '';
 
-  productosIniciales.forEach(producto => {
+  let productos = obtenerDatosProductos(); // Obtener los datos de productos del almacenamiento local
+
+  productos.forEach(producto => {
     let divProducto = document.createElement('div');
     divProducto.classList.add('producto');
     // Inner HTML
@@ -44,7 +46,7 @@ function mostrarProductos() {
         <p>ID: ${producto.id}</p>
         <p>Nombre: ${producto.nombre}</p>
         <p>Precio: $${producto.precio}</p>
-        <p>Cantidad: <span id="cantidad-${producto.id}">${producto.cantidad}</span></p>
+        <p>Stock: <span id="cantidad-${producto.id}">${producto.cantidad}</span></p>
         <input type="number" id="cantidad${producto.id}" placeholder="Cantidad">
         <button class="pedido" onclick="realizarPedido(${producto.id})">Pedido</button>
         <p id="resultado-${producto.id}"></p>
@@ -69,6 +71,10 @@ function realizarPedido(id) {
   let producto = productos.find(function(item) {
     return item.id === id;
   });
+  if (isNaN(cantidad) || cantidad <= 0) {
+    mostrarMensaje(`Ingrese una cantidad válida para el producto ${id}`);
+    return;
+  }
 
   if (!producto) {
     mostrarMensaje(`No se encontró el producto con ID ${id}`);
@@ -79,6 +85,7 @@ function realizarPedido(id) {
     mostrarMensaje(`No hay suficiente stock del producto ${id}`);
     return;
   }
+  cantidadInput.value = "";
 
   producto.cantidad -= cantidad;
   guardarDatosProductos(productos);
@@ -89,9 +96,9 @@ function realizarPedido(id) {
 
 // Función para guardar un pedido en el localStorage
 function guardarPedido(producto, cantidad) {
-  let pedidoActual = JSON.parse(localStorage.getItem('pedido')) || []; // Obtener el pedido existente o un arreglo vacío
-  pedidoActual.push({ producto, cantidad }); // Agregar el nuevo pedido al arreglo
-  localStorage.setItem('pedido', JSON.stringify(pedidoActual)); // Guardar el arreglo actualizado en localStorage
+  let pedidoActual = JSON.parse(localStorage.getItem('pedido')) || []; // Obtener el pedido existente o un array vacío
+  pedidoActual.push({ producto, cantidad }); // Agregar el nuevo pedido al array
+  localStorage.setItem('pedido', JSON.stringify(pedidoActual)); // Guardar el array actualizado en localStorage
 }
 
 // Función para actualizar la cantidad en el HTML
@@ -109,7 +116,8 @@ function mostrarMensaje(mensaje) {
     mensajeElement.remove();
   }, 2000);
 }
-
+localStorage.clear();
+guardarDatosProductos(productosIniciales);
 // Llamada inicial para cargar y mostrar los productos
 mostrarProductos();
   
