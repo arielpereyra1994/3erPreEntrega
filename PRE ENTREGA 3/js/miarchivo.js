@@ -1,3 +1,13 @@
+// Cargar productos iniciales
+const productosIniciales = [
+  { id: 1, nombre: 'Desodorante', precio: 900, cantidad: 500 },
+  { id: 2, nombre: 'Crema Facial', precio: 450, cantidad: 100 },
+  { id: 3, nombre: 'Perfume', precio: 5000, cantidad: 80 },
+  { id: 4, nombre: 'Shampoo', precio: 400, cantidad: 38},
+  { id: 5, nombre: 'Acondicionador', precio: 350, cantidad: 48},
+  { id: 6, nombre: 'Crema de Peinar', precio: 450, cantidad: 24}
+];
+
 // Función para obtener los datos de productos desde el almacenamiento local
 function obtenerDatosProductos() {
   let datosProductos = localStorage.getItem('productos');
@@ -73,15 +83,7 @@ function mostrarMensaje(mensaje) {
   }, 2000);
 }
 
-// Cargar productos iniciales
-const productosIniciales = [
-  { id: 1, nombre: 'Desodorante', precio: 900, cantidad: 500 },
-  { id: 2, nombre: 'Crema Facial', precio: 450, cantidad: 100 },
-  { id: 3, nombre: 'Perfume', precio: 5000, cantidad: 80 },
-  { id: 4, nombre: 'Shampoo', precio: 400, cantidad: 38},
-  { id: 5, nombre: 'Acondicionador', precio: 350, cantidad: 48},
-  { id: 6, nombre: 'Crema de Peinar', precio: 450, cantidad: 24}
-];
+
 
 guardarDatosProductos(productosIniciales);
 mostrarProductos();
