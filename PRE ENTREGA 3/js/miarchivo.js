@@ -116,7 +116,6 @@ function mostrarMensaje(mensaje) {
     mensajeElement.remove();
   }, 2000);
 }
-localStorage.clear();
 guardarDatosProductos(productosIniciales);
 // Llamada inicial para cargar y mostrar los productos
 mostrarProductos();
